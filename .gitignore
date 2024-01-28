@@ -1,0 +1,12 @@
+# Папка с байткодом Python
+__pycache__/
+
+# Временные файлы
+*.pyc
+
+# Файлы с паролями
+login_data.json
+login_headers.json
+
+# Файл для теста каких-либо функций
+test.py

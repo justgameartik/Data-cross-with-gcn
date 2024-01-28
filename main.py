@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 from tqdm import tqdm
+import re
 
-def draw(ch1, ch2, grb_title, grb_time):
+def draw(channel, ch1, ch2, grb_title, grb_time):
   fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(16, 6))
 
   bounds = getBoundIndexes(ch1['time'], ch2['time'], grb_time)
@@ -43,10 +44,13 @@ def draw(ch1, ch2, grb_title, grb_time):
     ax.set_xlabel("Время, unix time")
     ax.set_yscale('log')
     ax.legend()
-  fig.suptitle(f'{grb_title}, trigger at {grb_time}')
 
-  plt.savefig(f'drawings/{grb_title}-{grb_time}.png')
-    
+  channel = re.search(r'\d{1,2}', channel).group()
+  fig.suptitle(f'{grb_title} on decor-{channel}, trigger at {grb_time}')
+
+  plt.savefig(f'drawings/{grb_title[-7:]}-{channel}-{grb_time}.png')
+  plt.cla(); plt.clf(); plt.close()
+
 
 def findNearestIdx(time, grb_time):
   left = 0; right = len(time) - 1
@@ -84,17 +88,17 @@ def getBoundIndexes(ch1_time, ch2_time, grb_time):
   ]
 
 
-def findGRBs(min_time, max_time):
+def findGRBs(satellite, min_time, max_time):
   trigger_times = getCirculars(min_time, max_time)
   
   account = Connection()
-  ch1, ch2 = account.getData(min_time, max_time)
-  
-  for grb_title, grb_times in tqdm(trigger_times.items()):
-    for grb_time in grb_times:
-      nearest_idx = findNearestIdx(ch1['time'], grb_time)
-      if (nearest_idx != -1 and abs(ch1['time'][nearest_idx] - grb_time) < 100 and 
-          nearest_idx != 0 and abs(ch1['time'][nearest_idx-1] - grb_time) < 100):
-        draw(ch1, ch2, grb_title, grb_time)
+  for channel in account.getChannels(satellite):
+    ch1, ch2 = account.getData(channel, min_time, max_time)
+    for grb_title, grb_times in tqdm(trigger_times.items()):
+      for grb_time in grb_times:
+        nearest_idx = findNearestIdx(ch1['time'], grb_time)
+        if (nearest_idx != -1 and abs(ch1['time'][nearest_idx] - grb_time) < 100 and 
+            nearest_idx != 0 and abs(ch1['time'][nearest_idx-1] - grb_time) < 100):
+          draw(channel, ch1, ch2, grb_title, grb_time)
 
-findGRBs('2023-08-12 18:53:12', '2023-08-12 19:03:12')
+findGRBs('avion', '2023-09-01 00:00:01', '2023-09-30 23:59:59')

@@ -22,14 +22,14 @@ class Connection:
       print(f"Failed to authenticate, reason: {self.response.reason}")
 
 
-  def __downloadData(self, min_dt, max_dt):
+  def __downloadData(self, ch, min_dt, max_dt):
     print('getting data is in progress')
     get_data_url = 'https://downloader.sinp.msu.ru/db_iface/api/v1/query/'
     data_request = {
       "request": {
         "select": [
-          "avion.avion_monitoring22_flux.ch1",
-          "avion.avion_monitoring22_flux.ch2"
+          ch+".ch1",
+          ch+".ch2"
         ],
         "where": {
           "resolution": "1s",
@@ -48,13 +48,14 @@ class Connection:
     channel['value'] = channel['value'][filter]
     channel['time'] = channel['time'][filter].astype(np.int64)
 
-  def getData(self, min_time, max_time):
+
+  def getData(self, ch, min_time, max_time):
     min_dt = int(datetime.strptime(min_time, '%Y-%m-%d %H:%M:%S')
                   .replace(tzinfo=timezone.utc).timestamp())*1000
     max_dt = int(datetime.strptime(max_time, '%Y-%m-%d %H:%M:%S')
                   .replace(tzinfo=timezone.utc).timestamp())*1000
-    data = self.__downloadData(min_dt, max_dt)
-    
+    data = self.__downloadData(ch, min_dt, max_dt)
+
     ch1 = {
       'time': np.array(data['data'][0]['response'])[:, 0]/1000, 
       'value': np.array(data['data'][0]['response'])[:, 1]
@@ -68,3 +69,16 @@ class Connection:
     self.__filter(ch2)
 
     return ch1, ch2
+  
+
+  def getChannels(self, satellite):
+    satellites = {
+      'avion': [
+        'avion.avion_monitoring1_flux',
+        'avion.avion_monitoring21_flux',
+        'avion.avion_monitoring22_flux',
+        'avion.avion_monitoring3_flux'
+      ]
+    }
+
+    return satellites[satellite]
