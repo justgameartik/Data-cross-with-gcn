@@ -1,6 +1,6 @@
+import json
 import re
 import requests
-import json
 from datetime import datetime, timezone
 from tqdm import tqdm
 

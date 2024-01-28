@@ -1,6 +1,6 @@
-import requests
 import json
 import numpy as np
+import requests
 from datetime import datetime, timezone
 
 class Connection:

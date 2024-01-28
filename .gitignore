@@ -10,3 +10,9 @@ login_headers.json
 
 # Файл для теста каких-либо функций
 test.py
+
+# Папка с графиками
+drawings/
+
+# Папка с циркулярами из gcn
+circulars/
