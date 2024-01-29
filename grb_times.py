@@ -1,10 +1,12 @@
 import json
+import os
 import re
 import requests
 from datetime import datetime, timezone
 from tqdm import tqdm
 
 kURL = 'https://gcn.nasa.gov/circulars/'
+kFolderPath = 'circulars/'
 
 def binarySearchForBound(time, r_bound, add=0):
   time = int(datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
@@ -32,24 +34,33 @@ def getBoundaries(min_time, max_time):
   return (l_bound, r_bound)
     
 
-def getCirculars(min_time, max_time):  
+def getCircular(filename):
+  if os.path.exists(kFolderPath+filename):
+    with open(kFolderPath+filename, 'r') as f:
+      return json.load(f)
+  
+  circular = requests.get(kURL+filename)
+  if circular.status_code == requests.codes.ok:
+    content = json.loads(circular.content.decode('utf-8'))
+    with open(kFolderPath+filename, 'w') as f:
+      json.dump(content, f)
+    return content
+  print(f'Getting file {filename} failed, {circular.reason}')
+
+
+def getTriggerTimes(min_time, max_time):  
   boundaries = getBoundaries(min_time, max_time)
   grb_times = {}
   for i in tqdm(range(min(boundaries), max(boundaries)+1)):
     filename = str(i) + '.json'
-    circular = requests.get(kURL+filename)
-    if circular.status_code == requests.codes.ok:
-      content = json.loads(circular.content.decode('utf-8'))
-      grb_title = re.search(r'GRB \d{6}', content['subject'])
-      if grb_title:
-        grb_title = grb_title.group()
-        if grb_title not in grb_times:
-          grb_times[grb_title] = set()
-        grb_times[grb_title] |= getGRBTime(content)
+    content = getCircular(filename)
+    grb_title = re.search(r'GRB \d{6}', content['subject'])
+    if grb_title:
+      grb_title = grb_title.group()
+      if grb_title not in grb_times:
+        grb_times[grb_title] = set()
+      grb_times[grb_title] |= getGRBTime(content)
 
-    else:
-      print(f'Getting file {filename} failed, reason: {circular.reason}')
-  
   return grb_times
 
 

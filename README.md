@@ -10,7 +10,7 @@ Necessary headers to login on downloader.sinp.msu.ru are User-Agent, Referer and
 In result, there will be graphs of data from downloader.sinp.msu.ru in the moment of GRB trigger time from gcn circulars in two scales: 2000s and 240s.
 
 # TODO:
-- add saving of circulars if they have not been saved yet, work with saved ones (this is much faster: ~1.5s on 1 circular get request)
 - add circularId on the graph
--? add new satellites
--? add check if time interval is invalid
+- change draw logic
+- add new satellites?
+- add check if time interval is invalid?
