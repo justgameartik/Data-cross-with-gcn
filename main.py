@@ -1,11 +1,12 @@
 from draw import draw, findNearestIdx
-from grb_times import getTriggerTimes
+from grb_times import TriggerTimes
 from get_data import Connection
 
 from tqdm import tqdm
 
 def findGRBs(satellite, min_time, max_time):
-  trigger_times = getTriggerTimes(min_time, max_time)
+  gcn = TriggerTimes()
+  trigger_times = gcn.getTriggerTimes(min_time, max_time)
   
   account = Connection()
   for channel in account.getChannels(satellite):

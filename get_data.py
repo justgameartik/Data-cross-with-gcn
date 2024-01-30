@@ -23,7 +23,7 @@ class Connection:
 
 
   def __downloadData(self, ch, min_dt, max_dt):
-    print('getting data is in progress')
+    print(f'getting data for {ch} is in progress')
     get_data_url = 'https://downloader.sinp.msu.ru/db_iface/api/v1/query/'
     data_request = {
       "request": {
