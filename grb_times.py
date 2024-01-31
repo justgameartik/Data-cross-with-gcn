@@ -10,8 +10,8 @@ kFolderPath = 'circulars/'
 
 class TriggerTimes:
   def __init__(self):
-    self.triggers = {} # key - GRB title, value - trigger_time
-    self.circulars = {} # key - trigger_time, value - circularId
+    self.trigger_times = {} # key - grb_title, value - trigger_times
+    self.circularIds = {} # key trigger_time, value - circularId
     self.boundaries = () # boundaries of circulars to research 
 
   def __binarySearchForBound(self, time, r_bound, add=0):
@@ -30,7 +30,7 @@ class TriggerTimes:
     return r
 
 
-  def __getBoundaries(self, min_time, max_time):
+  def getBoundaries(self, min_time, max_time):
     print('finding boundaries for circulars is in progress')
     URLAllCirculars = 'https://gcn.nasa.gov/circulars?_data=routes%2F_gcn.circulars._archive._index'
     response = requests.get(URLAllCirculars, stream=True)
@@ -55,38 +55,31 @@ class TriggerTimes:
 
 
   def getTriggerTimes(self, min_time, max_time):  
-    self.__getBoundaries(min_time, max_time)
+    self.getBoundaries(min_time, max_time)
     grb_times = {}
     for i in tqdm(range(min(self.boundaries), max(self.boundaries)+1)):
       filename = str(i) + '.json'
       content = self.__getCircular(filename)
       grb_title = re.search(r'GRB \d{6}\w', content['subject'])
       if grb_title:
-        grb_title = grb_title.group()
-        if grb_title not in grb_times:
-          grb_times[grb_title] = set()
-        grb_times[grb_title] |= self.__getGRBTime(content)
+        grb_title = grb_title.group()[-7:]
+        self.__getGRBTime(content, grb_title)
 
-    return grb_times
+    return self.trigger_times, self.circularIds
 
 
-  def __getGRBTime(self, circular):
-    circular_times = set()
-
-    date_match = re.search(r'GRB \d{6}(?!\d{2})', circular['subject'])
-    if date_match is None:
-      date_match = re.search(r'GRB \d{8}(?!\d)', circular['subject'])
-    if date_match is None:
-      return circular_times
-    date_match = date_match.group()[-6:]
+  def __getGRBTime(self, circular, grb_title):
+    date_match = grb_title[-7:-1]
 
     pattern = r'(?<!\+|\-)\d{2}:\d{2}:\d{2}'
     time_matches = re.findall(pattern, circular['body'])
     for time_match in time_matches:
+      if grb_title not in self.trigger_times:
+        self.trigger_times[grb_title] = []
       try:
-        circular_times.add(int(datetime.strptime(str(date_match)+str(time_match[:8]), '%y%m%d%H:%M:%S')
-                            .replace(tzinfo=timezone.utc).timestamp()))
+        trigger_time = int(datetime.strptime(str(date_match)+str(time_match[:8]), '%y%m%d%H:%M:%S')
+                           .replace(tzinfo=timezone.utc).timestamp())
+        self.trigger_times[grb_title].append(trigger_time)
+        self.circularIds[trigger_time] = circular['circularId']
       except Exception as e:
         print(f'date={date_match}, time={time_match}, circular_id={circular['circularId']}, error={e}')
-
-    return circular_times

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 
-def draw(channel, ch1, ch2, grb_title, grb_time):
+def draw(channel, ch1, ch2, grb_title, grb_time, circular_id):
   fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(16, 6))
 
   bounds = getBoundIndexes(ch1['time'], ch2['time'], grb_time)
@@ -35,7 +35,7 @@ def draw(channel, ch1, ch2, grb_title, grb_time):
     ax.yaxis.set_minor_locator(AutoMinorLocator())
     ax.tick_params(which='major', length=10, width=2)
     ax.tick_params(which='minor', length=5, width=1)
-    ax.axvline(x=grb_time, label='trigger')
+    ax.axvline(x=grb_time, label=f'trigger in {circular_id}')
     ax.set_ylabel('Нормированный поток')
     ax.set_xlabel("Время, unix time")
     ax.set_yscale('log')
