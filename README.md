@@ -9,10 +9,11 @@ Necessary headers to login on downloader.sinp.msu.ru are User-Agent, Referer and
 
 In result, there will be graphs of data from downloader.sinp.msu.ru in the moment of GRB trigger time from gcn circulars in two scales: 2000s and 240s.
 
-# Sample result:
-[!Гамма-всплеск, зарегистрированный спутником "Авион" 20.10.2023](https://drive.google.com/file/d/1lhJ5S5oxourKnkJbvfpKi8iAy_u_wLjC/view?usp=sharing)
+## Sample result:
+![231020A-1-1697828218](https://github.com/justgameartik/Data-cross-with-gcn/assets/112627431/894ca41e-3703-4d9b-bbb2-7c87a635eb83)
+Gamma-ray burst registered by "Avion" satellite on 2023.10.20, the gcn circular number 34917 mentions this GRB.
 
-# TODO:
+## TODO:
 - change draw logic
 - add new satellites?
 - add check if time interval is invalid?
