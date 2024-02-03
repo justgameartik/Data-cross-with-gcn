@@ -7,13 +7,13 @@ here 'avion' is the satellite you want to get data from (if you want to add your
 
 Necessary headers to login on downloader.sinp.msu.ru are User-Agent, Referer and Cookie; necessary data is csrfmiddlewaretoken, username, password. I've hidden them in login_headers.json and login_data.json.
 
-In result, there will be graphs of data from downloader.sinp.msu.ru in the moment of GRB trigger time from gcn circulars in two scales: 2000s and 240s.
+In result, there will be graphs of data from downloader.sinp.msu.ru in the moment of GRB trigger time from gcn circulars in two scales: 1200s and 120s.
 
 ## Sample result:
-![231020A-1-1697828218](https://github.com/justgameartik/Data-cross-with-gcn/assets/112627431/894ca41e-3703-4d9b-bbb2-7c87a635eb83)
+![240102C-1-35479](https://github.com/justgameartik/Data-cross-with-gcn/assets/112627431/d9052926-c7e8-4cf0-b9f7-82fa29682614)
 Gamma-ray burst registered by "Avion" satellite on 2023.10.20, the gcn circular number 34917 mentions this GRB.
 
 ## TODO:
-- change draw logic
+- change draw logic of close graphic?
 - add new satellites?
 - add check if time interval is invalid?
