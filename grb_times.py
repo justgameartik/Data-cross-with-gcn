@@ -11,9 +11,12 @@ URL_ALL_CIRCULARS = 'https://gcn.nasa.gov/circulars?_data=routes%2F_gcn.circular
 
 class TriggerTimes:
     def __init__(self):
-        self.trigger_times = {} # key - grb_title, value - trigger_times
-        self.circularIds = {} # key trigger_time, value - circularId
-        self.boundaries = () # boundaries of circulars to research     
+        # interval of circulars in researching period
+        self.boundaries = ()
+        # dict, where key is circularId and value is array of times in circular
+        self.circular_times = {}
+        # dict, where key is circularId and value is grb_title
+        self.grb_titles = {}
 
     def __binary_search_for_bound(self, time, r_bound, add=0):
         time = add + int(
@@ -68,20 +71,29 @@ class TriggerTimes:
                 grb_title = grb_title.group()[-7:]
                 self.__get_GRB_time(content, grb_title)
 
-        return self.trigger_times, self.circularIds
+        return self.circular_times, self.grb_titles
 
     def __get_GRB_time(self, circular, grb_title):
-        date_match = grb_title[-7:-1]
+        try:
+            circular_id = circular['circularId']
+        except KeyError:
+            print(f"circularId not found for {grb_title}")
+            return
 
+        date_match = grb_title[-7:-1]
         pattern = r'(?<!\+|\-)\d{2}:\d{2}:\d{2}'
         time_matches = re.findall(pattern, circular['body'])
-        for time_match in time_matches:
-            if grb_title not in self.trigger_times:
-                self.trigger_times[grb_title] = []
+
+        self.grb_titles[circular_id] = grb_title
+        self.circular_times[circular_id] = self.__unix_time_convert(
+            time_matches, date_match, circular_id)
+
+    def __unix_time_convert(self, times_str, date, circular_id):
+        for i in range(len(times_str)):
             try:
-                trigger_time = int(datetime.strptime(str(date_match)+str(time_match[:8]), '%y%m%d%H:%M:%S')
-                                  .replace(tzinfo=timezone.utc).timestamp())
-                self.trigger_times[grb_title].append(trigger_time)
-                self.circularIds[trigger_time] = circular['circularId']
+                times_str[i] = int(datetime.strptime(str(date)+str(times_str[i][:8]), '%y%m%d%H:%M:%S')
+                                    .replace(tzinfo=timezone.utc).timestamp())
             except Exception as e:
-                print(f'date={date_match}, time={time_match}, circular_id={circular['circularId']}, error={e}')
+                print(f'date={date}, time={times_str[i]}, circular_id={circular_id}, error={e}')
+        
+        return times_str
