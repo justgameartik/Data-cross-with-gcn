@@ -83,6 +83,24 @@ class Connection:
                 'avion.avion_monitoring21_flux',
                 'avion.avion_monitoring22_flux',
                 'avion.avion_monitoring3_flux'
+            ],
+            "monitor2": [
+                "monitor2.monitor2_monitoring21_flux",
+                "monitor2.monitor2_monitoring22_flux",
+                "monitor2.monitor2_monitoring31_flux",
+                "monitor2.monitor2_monitoring32_flux"
+            ],
+            "monitor3": [
+                "monitor3.monitor3_monitoring21_flux",
+                "monitor3.monitor3_monitoring22_flux",
+            ],
+            "monitor4": [
+                "monitor4.monitor4_monitoring21_flux",
+                "monitor4.monitor4_monitoring22_flux"
+            ],
+            "utmn2": [
+                "utmn2.utmn2_monitoring21_flux",
+                "utmn2.utmn2_monitoring22_flux",
             ]
         }
 

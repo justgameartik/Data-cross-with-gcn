@@ -23,7 +23,7 @@ class TriggerTimes:
             datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
             .replace(tzinfo=timezone.utc).timestamp()
             )
-        l = 30000
+        l = 33000
         r = int(r_bound)
         while l < r:
             mean = (l + r) // 2
@@ -89,11 +89,14 @@ class TriggerTimes:
             time_matches, date_match, circular_id)
 
     def __unix_time_convert(self, times_str, date, circular_id):
-        for i in range(len(times_str)):
+        unix_time_circular = []
+        for time in times_str:
             try:
-                times_str[i] = int(datetime.strptime(str(date)+str(times_str[i][:8]), '%y%m%d%H:%M:%S')
-                                    .replace(tzinfo=timezone.utc).timestamp())
+                unix_time_circular.append(
+                    int(datetime.strptime(str(date)+str(time[:8]), '%y%m%d%H:%M:%S')
+                       .replace(tzinfo=timezone.utc).timestamp())
+                    )
             except Exception as e:
-                print(f'date={date}, time={times_str[i]}, circular_id={circular_id}, error={e}')
+                print(f'date={date}, time={time}, circular_id={circular_id}, error={e}')
         
-        return times_str
+        return unix_time_circular
