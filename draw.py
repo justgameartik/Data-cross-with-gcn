@@ -5,7 +5,7 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 from datetime import datetime, timezone
 
-def draw(channel, ch1, ch2, grb_title, grb_times, circular_id):
+def draw(satellite, channel, ch1, ch2, grb_title, grb_times, circular_id):
     fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(16, 6))
 
     bounds = get_bound_indexes(ch1['time'], ch2['time'], grb_times)
@@ -46,8 +46,9 @@ def draw(channel, ch1, ch2, grb_title, grb_times, circular_id):
         ax.set_yscale('log')
         ax.legend()
 
+    channel = re.search(r'monitoring\d{1,2}', channel).group()
     channel = re.search(r'\d{1,2}', channel).group()
-    fig.suptitle(f'{grb_title} on decor-{channel}, circularId - {circular_id}')
+    fig.suptitle(f'{grb_title} on {satellite}-{channel}, circularId - {circular_id}')
     fig.autofmt_xdate()
 
     plt.savefig(f'drawings/{grb_title[-7:]}-{channel}-{circular_id}.png')
