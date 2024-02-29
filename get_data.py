@@ -41,7 +41,10 @@ class Connection:
             GET_DATA_URL, data=json.dumps(data_request)
         )
 
-        return json.loads(data_response.content.decode('utf-8'))
+        try:
+            return json.loads(data_response.content.decode('utf-8'))
+        except ValueError:
+            print(data_response.reason)
   
 
     def __filter(self, channel):

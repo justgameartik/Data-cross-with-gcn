@@ -81,12 +81,31 @@ class TriggerTimes:
             return
 
         date_match = grb_title[-7:-1]
-        pattern = r'(?<!\+|\-)\d{2}:\d{2}:\d{2}'
-        time_matches = re.findall(pattern, circular['body'])
+        pattern = r'[\s\S]{10}(?<!\+|\-)\d{2}:\d{2}:\d{2}[\s\S]{10}'
+        time_matches = self.__validate_time(re.findall(pattern, circular['body']))
 
         self.grb_titles[circular_id] = grb_title
         self.circular_times[circular_id] = self.__unix_time_convert(
             time_matches, date_match, circular_id)
+
+    def __validate_time(self, time_matches, distance: int = 10):
+        wrong_patterns = [
+            'dec',
+            'j2000',
+            'ra'
+        ]
+        validated_times = []
+        
+        for time_str in time_matches:
+            is_correct = True
+            for pattern in wrong_patterns:
+                if (re.findall(pattern, time_str.lower()[:distance]) or
+                        re.findall(pattern, time_str.lower()[-distance:])):
+                    is_correct = False
+            if is_correct:
+                validated_times.append(time_str[distance:-distance])
+        
+        return validated_times
 
     def __unix_time_convert(self, times_str, date, circular_id):
         unix_time_circular = []
