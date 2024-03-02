@@ -12,7 +12,7 @@ def combine_pngs_to_pdf(png_files, output_path):
                   save_all=True, append_images=pages[1:], 
                   dpi=(300, 300), compression=None, quality=100)
 
-if __name__ == '__main__':
+def make_pdf_files():
     for grb in os.listdir(INPUT_PATH):
         if os.path.isdir(os.path.join(INPUT_PATH, grb)):
             if grb == 'reports':
@@ -21,3 +21,6 @@ if __name__ == '__main__':
             output_path = f'{INPUT_PATH}/reports/{grb}.pdf'
             png_files = glob(os.path.join(INPUT_PATH, grb,'*.png'))
             combine_pngs_to_pdf(png_files, output_path)
+
+if __name__ == '__main__':
+    make_pdf_files()

@@ -45,6 +45,7 @@ class Connection:
             return json.loads(data_response.content.decode('utf-8'))
         except ValueError:
             print(data_response.reason)
+            return self.__download_data(ch, min_dt, max_dt)
   
 
     def __filter(self, channel):
