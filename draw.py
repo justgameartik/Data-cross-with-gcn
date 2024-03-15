@@ -5,7 +5,7 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 from datetime import datetime, timezone
 
-def draw(satellite, channel, ch1, ch2, grb_title, grb_times, circular_id):
+def draw(satellite, channel, ch1, ch2, grb_title, grb_times, circular_id, window = 5):
     fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(16, 6))
 
     bounds = get_bound_indexes(ch1['time'], ch2['time'], grb_times)
@@ -19,8 +19,10 @@ def draw(satellite, channel, ch1, ch2, grb_title, grb_times, circular_id):
         ch2['value'][bounds[1]['far'][0]: bounds[1]['far'][1]],
         c='black', linewidth=1, label='electrons'
     )
+
+    close_times = clock(ch1['time'][bounds[0]['close'][0]: bounds[0]['close'][1]])
     axs[1].scatter(
-        clock(ch1['time'][bounds[0]['close'][0]: bounds[0]['close'][1]]),
+        close_times,
         ch1['value'][bounds[0]['close'][0]: bounds[0]['close'][1]],
         c='red', s=4, label='gamma'
     )
@@ -28,6 +30,14 @@ def draw(satellite, channel, ch1, ch2, grb_title, grb_times, circular_id):
         clock(ch2['time'][bounds[1]['close'][0]: bounds[1]['close'][1]]),
         ch2['value'][bounds[1]['close'][0]: bounds[1]['close'][1]],
         c='black', s=4, label='electrons'
+    )
+    axs[1].plot(
+        close_times[window//2:-(window//2)],
+        rolling_mean(
+            window,
+            ch1['value'][bounds[0]['close'][0]: bounds[0]['close'][1]]
+        ),
+        c='purple', label=f'rolling mean {window}'
     )
     
     axs[0].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
@@ -93,3 +103,12 @@ def find_nearest_idx(time, grb_time):
 
 def clock(time_lst):
     return [datetime.fromtimestamp(time, timezone.utc) for time in time_lst]
+
+def rolling_mean(window, flux):
+    rolling_means = []
+    for i in range(len(flux)-window+1):
+        sum = 0
+        for j in range(window):
+            sum += flux[i+j]
+        rolling_means.append(sum/window)
+    return rolling_means

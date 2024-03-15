@@ -83,28 +83,28 @@ class Connection:
     def get_channels(self, satellite):
         satellites = {
             'avion': [
-                'avion.avion_monitoring1_flux',
-                'avion.avion_monitoring21_flux',
-                'avion.avion_monitoring22_flux',
-                'avion.avion_monitoring3_flux'
+                'avion.avion_monitoring1',
+                'avion.avion_monitoring21',
+                'avion.avion_monitoring22',
+                'avion.avion_monitoring3'
             ],
             "monitor2": [
-                "monitor2.monitor2_monitoring21_flux",
-                "monitor2.monitor2_monitoring22_flux",
-                "monitor2.monitor2_monitoring31_flux",
-                "monitor2.monitor2_monitoring32_flux"
+                "monitor2.monitor2_monitoring21",
+                "monitor2.monitor2_monitoring22",
+                "monitor2.monitor2_monitoring31",
+                "monitor2.monitor2_monitoring32"
             ],
             "monitor3": [
-                "monitor3.monitor3_monitoring21_flux",
-                "monitor3.monitor3_monitoring22_flux",
+                "monitor3.monitor3_monitoring21",
+                "monitor3.monitor3_monitoring22",
             ],
             "monitor4": [
-                "monitor4.monitor4_monitoring21_flux",
-                "monitor4.monitor4_monitoring22_flux"
+                "monitor4.monitor4_monitoring21",
+                "monitor4.monitor4_monitoring22"
             ],
             "utmn2": [
-                "utmn2.utmn2_monitoring21_flux",
-                "utmn2.utmn2_monitoring22_flux",
+                "utmn2.utmn2_monitoring21",
+                "utmn2.utmn2_monitoring22",
             ]
         }
 
