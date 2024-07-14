@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 GCN_URL = 'https://gcn.nasa.gov/circulars/'
 CIRCULAR_FOLDER_PATH = 'circulars/'
-URL_ALL_CIRCULARS = 'https://gcn.nasa.gov/circulars?_data=routes%2F_gcn.circulars._archive._index'
+URL_ALL_CIRCULARS = 'https://gcn.nasa.gov/circulars?_data=routes%2Fcirculars._archive._index'
 
 class TriggerTimes:
     def __init__(self):
@@ -23,7 +23,7 @@ class TriggerTimes:
             datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
             .replace(tzinfo=timezone.utc).timestamp()
             )
-        l = 33000
+        l = 32000
         r = int(r_bound)
         while l < r:
             mean = (l + r) // 2
