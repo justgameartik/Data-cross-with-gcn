@@ -22,7 +22,7 @@ def add_checked_grb(grb_title, grb_with_cross, all_grbs, min_time, is_in_data=Fa
         grb_with_cross.add(grb_title)
     all_grbs.add(grb_title)
 
-def find_GRBs(satellite, min_time, max_time):
+def find_GRBs(satellite, min_time, max_time, download=False):
     gcn = TriggerTimes()
     circular_times, grb_titles = gcn.get_trigger_times(min_time, max_time)
     account = Connection()
@@ -31,10 +31,10 @@ def find_GRBs(satellite, min_time, max_time):
         # Getting GRBs where we have data and where we don't 
         grb_with_cross = set(); all_grbs = set()
 
-        ch1, ch2 = account.get_data(channel, min_time, max_time)
+        ch1, ch2, ch3 = account.get_data(satellite, channel, min_time, max_time, download)
         for circular_id, trigger_times in tqdm(circular_times.items()):
             if find_cross(trigger_times, ch1['time']):
-                draw(satellite, channel, ch1, ch2, grb_titles[circular_id], trigger_times, circular_id)
+                draw(satellite, channel, ch1, ch3, grb_titles[circular_id], trigger_times, circular_id)
                 add_checked_grb(grb_titles[circular_id], grb_with_cross, all_grbs, min_time, True)
             add_checked_grb(grb_titles[circular_id], grb_with_cross, all_grbs, min_time)
 
@@ -42,6 +42,6 @@ def find_GRBs(satellite, min_time, max_time):
         all_grbs_total |= all_grbs
 
     with open('GRBs/statistics.txt', 'a') as file:
-        file.write(f'{min_time}-{max_time}: see {len(grb_with_cross_total)}, don\'t see {len(all_grbs_total)}\n')
+        file.write(f'{satellite}: {min_time}-{max_time}: see {len(grb_with_cross_total)}, don\'t see {len(all_grbs_total)}\n')
         file.write(', '.join(sorted([grb for grb in grb_with_cross_total]))+'\n')
         file.write(', '.join(sorted([grb for grb in all_grbs_total]))+'\n')

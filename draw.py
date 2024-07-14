@@ -4,6 +4,7 @@ from matplotlib import dates
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 from datetime import datetime, timezone
+import os
 
 def draw(satellite, channel, ch1, ch2, grb_title, grb_times, circular_id, window = 5):
     fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(16, 6))
@@ -12,24 +13,24 @@ def draw(satellite, channel, ch1, ch2, grb_title, grb_times, circular_id, window
     axs[0].plot(
         clock(ch1['time'][bounds[0]['far'][0]: bounds[0]['far'][1]]),
         ch1['value'][bounds[0]['far'][0]: bounds[0]['far'][1]],
-        c='red', linewidth=1, label='gamma'
+        c='red', linewidth=1, label='Полная скорость счета'
     )
     axs[0].plot(
         clock(ch2['time'][bounds[1]['far'][0]: bounds[1]['far'][1]]),
         ch2['value'][bounds[1]['far'][0]: bounds[1]['far'][1]],
-        c='black', linewidth=1, label='electrons'
+        c='black', linewidth=1, label='Электронный канал'
     )
 
     close_times = clock(ch1['time'][bounds[0]['close'][0]: bounds[0]['close'][1]])
     axs[1].scatter(
         close_times,
         ch1['value'][bounds[0]['close'][0]: bounds[0]['close'][1]],
-        c='red', s=4, label='gamma'
+        c='red', s=4, label='Полная скорость счета'
     )
     axs[1].scatter(
         clock(ch2['time'][bounds[1]['close'][0]: bounds[1]['close'][1]]),
         ch2['value'][bounds[1]['close'][0]: bounds[1]['close'][1]],
-        c='black', s=4, label='electrons'
+        c='black', s=4, label='Электронный канал'
     )
     axs[1].plot(
         close_times[window//2:-(window//2)],
@@ -37,7 +38,7 @@ def draw(satellite, channel, ch1, ch2, grb_title, grb_times, circular_id, window
             window,
             ch1['value'][bounds[0]['close'][0]: bounds[0]['close'][1]]
         ),
-        c='purple', label=f'rolling mean {window}'
+        c='purple', label=f'скользящее среднее\nс параметром {window}'
     )
     
     axs[0].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
@@ -51,17 +52,25 @@ def draw(satellite, channel, ch1, ch2, grb_title, grb_times, circular_id, window
         ax.tick_params(which='minor', length=5, width=1)
         for grb_time in grb_times: 
             ax.axvline(x=clock([grb_time])[0])
-        ax.set_ylabel('Нормированный поток')
-        ax.set_xlabel("Время, unix time")
+        ax.set_ylabel(r'Скорость счета, $c^{-1}$')
+        ax.set_xlabel("Время, UTC")
         ax.set_yscale('log')
         ax.legend()
 
     channel = re.search(r'monitoring\d{1,2}', channel).group()
     channel = re.search(r'\d{1,2}', channel).group()
-    fig.suptitle(f'{grb_title} on {satellite}-{channel}, circularId - {circular_id}')
+    fig_title = f'GRB {grb_title} на спутнике {satellite} ДеКоР-{channel}, "circularId" - {circular_id}'
+    if 'avion' in fig_title:
+        fig_title=fig_title.replace('avion', 'Авион')
+    if 'monitor' in fig_title:
+        fig_title=fig_title.replace('monitor', 'Монитор-') 
+
+    fig.suptitle(fig_title)
     fig.autofmt_xdate()
 
-    plt.savefig(f'drawings/{grb_title[-7:]}-{channel}-{circular_id}.png')
+    if not os.path.exists(f'drawings/{satellite}/'):
+        os.mkdir(f'drawings/{satellite}')
+    plt.savefig(f'drawings/{satellite}/{grb_title[-7:]}-{channel}-{circular_id}.png')
     plt.cla(); plt.clf(); plt.close()
 
 
